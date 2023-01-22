@@ -1,17 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:food_delivery/controllers/popular_product_controller.dart';
+import 'package:food_delivery/pages/home/main_food_page.dart';
+import 'package:food_delivery/utils/app_constants.dart';
 import 'package:food_delivery/utils/colors.dart';
 import 'package:food_delivery/utils/dimensions.dart';
 import 'package:food_delivery/widgets/app_columns.dart';
 import 'package:food_delivery/widgets/app_icon.dart';
 import 'package:food_delivery/widgets/big_text.dart';
 import 'package:food_delivery/widgets/expandable_text_widget.dart';
+import 'package:get/get.dart';
 
 class PopularFoodDetail extends StatelessWidget {
-  const PopularFoodDetail({Key? key}) : super(key: key);
+  int pageId;
+
+  // const PopularFoodDetail(String? pageId, {Key? key}) : super(key: key);
+  PopularFoodDetail({Key? key, required this.pageId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var product =
+        Get.find<PopularProductController>().popularProductList[pageId];
+    // print("page is id " + pageId.toString());
+    // print("product name is " + product.name);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -26,7 +37,9 @@ class PopularFoodDetail extends StatelessWidget {
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: AssetImage("assets/image/breakfast.jpg"))),
+                        image: NetworkImage(AppConstants.BASE_URL +
+                            AppConstants.UPLOAD_URL +
+                            product.img!))),
               )),
           // icon widgets
           Positioned(
@@ -36,7 +49,11 @@ class PopularFoodDetail extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppIcon(icon: Icons.arrow_back_ios),
+                  GestureDetector(
+                      onTap: () {
+                        Get.to(() => MainFoodPage());
+                      },
+                      child: AppIcon(icon: Icons.arrow_back_ios)),
                   AppIcon(icon: Icons.shopping_cart_outlined)
                 ],
               )),
@@ -61,18 +78,13 @@ class PopularFoodDetail extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppColumn(text: "Chinese Side"),
+                    AppColumn(text: product.name!),
                     SizedBox(height: Dimensions.height20),
                     BigText(text: "Introduce"),
                     SizedBox(height: Dimensions.height20),
                     Expanded(
                       child: SingleChildScrollView(
-                        child: ExpandableTextWidget(
-                            text:
-                                "Food and beverage services or F&B service is a professional industry that includes restaurants, bars, cafeterias, canteens, food courts and other food-based hospitality businesses which provide meals to its customers for various purposes like meetings, gatherings, recreation etc \n\n"
-                                "Food and beverage service is a growing industry in the United States. Food and beverage service workers provide services that enhance an individual’s dining experience including preparing drinks, mixing ingredients to prepare food, serving customers at a table, delivering orders to the table, and managing a section of the restaurant. \n\n"
-                                "Food and beverage service workers are also labeled as servers, waiters/waitresses, bartenders, bussers, runners, hosts, dishwashers, cooks (not including chefs), assistants (e.g., salad preparers) \n\n"
-                                "To be successful in food service industry it is important to be able to do more than just take orders and serve food. You must have knowledge of the different types of foods and beverages offered, how to present them in an appealing manner, and most importantly you must be friendly."),
+                        child: ExpandableTextWidget(text: product.description),
                       ),
                     )
                   ],
@@ -127,7 +139,7 @@ class PopularFoodDetail extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  BigText(text: "\$0.08", color: Colors.white),
+                  BigText(text: "\$ ${product.price!}", color: Colors.white),
                   SizedBox(
                     width: Dimensions.width10 / 2,
                   ),
